@@ -1,5 +1,5 @@
 # RAG 配置文件
-chat_model_name: "gpt-3.5-turbo"
-embedding_model_name: "text-embedding-ada-002"
+chat_model_name: qwen3-max-2026-01-23
+embedding_model_name: qwen3-embedding:4b
 chunk_size: 1000
 chunk_overlap: 200

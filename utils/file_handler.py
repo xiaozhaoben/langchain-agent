@@ -48,8 +48,36 @@ def listdir_with_allowed_type(path: str, allowed_types: tuple[str]): # 返回文
 
     return tuple(files)
 
-def pef_loader(filepath: str, passwd=None) -> list[Document]:
-    return PyPDFLoader(filepath, passwd).load()
+def pdf_loader(filepath: str, passwd=None) -> list[Document]:
+    """
+    PDF 文件加载器
+    :param filepath: PDF 文件路径
+    :param passwd: PDF 密码（可选）
+    :return: Document 列表
+    """
+    try:
+        return PyPDFLoader(filepath, passwd).load()
+    except Exception as e:
+        logger.error(f"[PDF 加载] 加载{filepath}失败，{str(e)}")
+        return []
 
 def txt_loader(filepath: str) -> list[Document]:
-    return TextLoader(filepath).load()
+    """
+    TXT 文本文件加载器（UTF-8 编码）
+    :param filepath: TXT 文件路径
+    :return: Document 列表
+    """
+    try:
+        # 显式指定 UTF-8 编码，并尝试多种错误处理方式
+        return TextLoader(filepath, encoding='utf-8', autodetect_encoding=False).load()
+    except UnicodeDecodeError:
+        # 如果 UTF-8 失败，尝试自动检测编码
+        logger.warning(f"[TXT 加载]{filepath}UTF-8 解码失败，尝试自动检测编码")
+        try:
+            return TextLoader(filepath, autodetect_encoding=True).load()
+        except Exception as e:
+            logger.error(f"[TXT 加载] 加载{filepath}失败，{str(e)}")
+            return []
+    except Exception as e:
+        logger.error(f"[TXT 加载] 加载{filepath}失败，{str(e)}")
+        return []
