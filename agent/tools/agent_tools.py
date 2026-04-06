@@ -51,8 +51,13 @@ def generate_external_data():
         if not os.path.exists(external_data_path):
             raise FileNotFoundError(f"外部数据文件{agent_conf['external_data_path']}不存在")
         with open(external_data_path, "r", encoding="utf-8") as f:
-            for line in f.readlines()[1:]: # 从第一条读取
+            lines = f.readlines()
+            for line in lines[1:]: # 跳过表头，从第一条数据读取
+                if not line.strip():  # 跳过空行
+                    continue
                 arr = line.strip().split(",")
+                if len(arr) < 6:  # 确保有足够的列
+                    continue
                 user_id: str = arr[0].replace('"', "")
                 feature: str = arr[1].replace('"', "")
                 efficiency: str = arr[2].replace('"', "")
@@ -81,3 +86,6 @@ def fetch_external_data(user_id: str, month: str) -> str:
         logger.warning(f"[fetch_external_data]无法检索到用户{user_id}在{month}的数据")
         return ''
 
+@tool(description="无入参，无返回值，调用后触发中间件自动为报告生成的场景动态注入上下文信息，为后续提示词切换提供上下文信息")
+def fill_context_for_report():
+    return "fill_context_for_report已调用"
