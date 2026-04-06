@@ -395,7 +395,7 @@ for chunk in agent.execute_stream("您的查询"):
 
 1. **Fork 本仓库**
    ```bash
-   git clone https://github.com/your-username/langchain-agent.git
+   git clone https://github.com/xiaozhaoben/langchain-agent.git
    ```
 
 2. **创建功能分支**
