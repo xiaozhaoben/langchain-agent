@@ -1,1 +1,7 @@
 external_data_path: data/external/records.csv
+
+# 天气API配置（可选）
+# 推荐使用环境变量 WEATHER_API_KEY 设置，更安全
+# 也可在此配置文件中设置 weather_api_key: your_api_key
+# OpenWeatherMap API Key，不配置则使用免费的wttr.in
+# 获取API Key: https://openweathermap.org/api

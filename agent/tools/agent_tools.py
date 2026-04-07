@@ -6,6 +6,7 @@ from rag.rag_service import RagSummarizeService
 from utils.logger_handler import logger
 from utils.config_handler import agent_conf
 from utils.path_tool import get_abs_path
+from agent.tools.weather_service import weather_service
 
 rag = RagSummarizeService()
 
@@ -19,9 +20,14 @@ external_data = {}
 def rag_summarize(query: str) -> str:
     return rag.rag_summarize(query)
 
-@tool(description="获取指定城市的天气，以消息字符串的形式返回")
+@tool(description="获取指定城市的实时天气信息，包括温度、湿度、风速、空气质量等，以字符串形式返回")
 def get_weather(city: str) -> str:
-    return f"城市{city}天气为晴天，气温26摄氏度，空气湿度50%，南风1级，AQI21，最近6小时降雨概率极低"
+    """
+    获取指定城市的实时天气信息
+    :param city: 城市名称（支持中文，如：北京、上海、深圳）
+    :return: 天气信息字符串
+    """
+    return weather_service.get_weather(city)
 
 @tool(description="获取用户所在城市的名称，以纯字符串形式返回")
 def get_user_location() -> str:
