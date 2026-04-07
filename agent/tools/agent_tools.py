@@ -1,5 +1,6 @@
 import os.path
 import random
+import requests
 
 from langchain_core.tools import tool
 from rag.rag_service import RagSummarizeService
@@ -29,9 +30,90 @@ def get_weather(city: str) -> str:
     """
     return weather_service.get_weather(city)
 
+def _get_location_by_ip() -> str:
+    """
+    通过IP地址获取当前城市名称
+    使用多个免费API作为备份，确保可用性
+
+    :return: 城市名称，如"深圳市"
+    """
+    # 禁用代理，避免本地代理导致超时
+    proxies = {
+        'http': None,
+        'https': None,
+    }
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'application/json',
+    }
+
+    # 方案1: ip-api.com（免费，支持中文，推荐使用）
+    try:
+        response = requests.get(
+            "http://ip-api.com/json/?lang=zh-CN",
+            timeout=5,
+            proxies=proxies,
+            headers=headers
+        )
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('status') == 'success':
+                city = data.get('city', '')
+                if city:
+                    logger.info(f"[get_user_location] ip-api.com返回城市: {city}")
+                    return city
+    except Exception as e:
+        logger.warning(f"[get_user_location] ip-api.com调用失败: {e}")
+
+    # 方案2: ipinfo.io（免费额度有限）
+    try:
+        response = requests.get(
+            "https://ipinfo.io/json",
+            timeout=5,
+            proxies=proxies,
+            headers=headers
+        )
+        if response.status_code == 200:
+            data = response.json()
+            city = data.get('city', '')
+            if city:
+                logger.info(f"[get_user_location] ipinfo.io返回城市: {city}")
+                return city
+    except Exception as e:
+        logger.warning(f"[get_user_location] ipinfo.io调用失败: {e}")
+
+    # 方案3: ip-api.com备用（英文）
+    try:
+        response = requests.get(
+            "http://ip-api.com/json/",
+            timeout=5,
+            proxies=proxies,
+            headers=headers
+        )
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('status') == 'success':
+                city = data.get('city', '')
+                if city:
+                    logger.info(f"[get_user_location] ip-api.com(英文)返回城市: {city}")
+                    return city
+    except Exception as e:
+        logger.warning(f"[get_user_location] ip-api.com(英文)调用失败: {e}")
+
+    # 如果所有API都失败，返回默认城市
+    default_city = "深圳市"
+    logger.warning(f"[get_user_location] 所有API调用失败，返回默认城市: {default_city}")
+    return default_city
+
+
 @tool(description="获取用户所在城市的名称，以纯字符串形式返回")
 def get_user_location() -> str:
-    return random.choice(["深圳", "合肥", "杭州"])
+    """
+    获取用户当前所在城市
+    通过IP定位API自动获取，无需用户输入
+    :return: 城市名称字符串
+    """
+    return _get_location_by_ip()
 
 @tool(description="获取用户的ID，以纯字符串形式返回")
 def get_user_id() -> str:
