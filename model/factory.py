@@ -21,7 +21,12 @@ class ChatModelFactory(BaseModelFactory):
 
 class EmbeddingsFactory(BaseModelFactory):
     def generator(self) -> Optional[Embeddings | BaseChatModel]:
-        return OllamaEmbeddings(model=rag_conf['embedding_model_name'])
+        # Force direct local Ollama connection and bypass system proxies.
+        return OllamaEmbeddings(
+            model=rag_conf['embedding_model_name'],
+            base_url="http://127.0.0.1:11434",
+            client_kwargs={"trust_env": False},
+        )
 
 
 

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>智能扫地机器人客服</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">LangChain Agent</p>
+          <h1>智能扫地机器人客服</h1>
+        </div>
+        <button id="clear-history" class="ghost-button" type="button">清空会话</button>
+      </header>
+
+      <main class="chat-panel">
+        <section id="message-list" class="message-list" aria-live="polite"></section>
+        <div id="empty-state" class="empty-state">
+          <p>可以直接提问，例如：</p>
+          <div class="prompt-grid">
+            <button class="prompt-chip" type="button">扫地机器人如何保养？</button>
+            <button class="prompt-chip" type="button">给我生成我的使用报告</button>
+            <button class="prompt-chip" type="button">机器总是卡住怎么办？</button>
+          </div>
+        </div>
+      </main>
+
+      <form id="chat-form" class="composer">
+        <label class="composer-label" for="message-input">输入问题</label>
+        <div class="composer-row">
+          <textarea
+            id="message-input"
+            name="message"
+            rows="1"
+            maxlength="2000"
+            placeholder="请输入你的问题..."
+            required
+          ></textarea>
+          <button id="send-button" class="send-button" type="submit">发送</button>
+        </div>
+        <p id="status-text" class="status-text">等待提问</p>
+      </form>
+    </div>
+
+    <template id="message-template">
+      <article class="message">
+        <div class="message-meta"></div>
+        <div class="message-bubble"></div>
+      </article>
+    </template>
+
+    <script type="module" src="/static/app.js"></script>
+  </body>
+</html>
